@@ -1,0 +1,58 @@
+version: '3'
+services:
+  kibana:
+    image: {{ containers.kibana }} 
+    ports:
+      - 5601:5601
+    environment:
+      - server.name=TestServer
+      - server.host=0.0.0.0
+      - elasticsearch.url=http://elasticsearch:9200
+    volumes:
+      - kibanadata:/esr/share/kibana/data
+
+  elasticsearch:
+    image: {{ containers.elasticsearch }} 
+    environment:
+      - http.host=0.0.0.0
+      - transport.host=127.0.0.1
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    logging:
+      driver: json-file
+
+  logstash:
+    image: {{ containers.logstash }} 
+    ports:
+      - "11066:11066"
+    environment:
+      - http.host=0.0.0.0
+      - log.level=debug
+    volumes:
+      - logstashdata:/usr/share/logstash/data
+      - {{ env.PWD }}/pipeline:/usr/share/logstash/pipeline
+    logging:
+      driver: json-file
+      
+  zookeeper:
+    image: wurstmeister/zookeeper:3.4.6
+    
+  kafka:
+    image: wurstmeister/kafka:0.11.0.0
+    ports:
+      - 9092:9092
+    environment:
+      #HOSTNAME_COMMAND: "docker info | grep ^Name: | cut -d' ' -f 2"      
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      #KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT"
+      #KAFKA_ADVERTISED_PROTOCOL_NAME: OUTSIDE
+      #KAFKA_ADVERTISED_PORT: 9094
+      #KAFKA_PROTOCOL_NAME: INSIDE
+      KAFKA_PORT: 9092
+    
+  
+volumes:
+  esdata: null
+  kibanadata: null
+  logstashdata: null
+

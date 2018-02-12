@@ -1,0 +1,10 @@
+containers:
+  kibana:
+    context: ./kibana
+    dockerfile: ./kibana/Dockerfile
+  elasticsearch:
+    context: ./elasticsearch
+    dockerfile: ./elasticsearch/Dockerfile
+  logstash:
+    context: ./logstash
+    dockerfile: ./logstash/Dockerfile

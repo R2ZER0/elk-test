@@ -1,0 +1,22 @@
+version: '3'
+services:
+  logstash_leaf:
+    image: {{ containers.logstash }} 
+    environment:
+      - log.level=debug
+    ports:
+      - "12201:12201/udp"
+    volumes:
+      - logstashleafdata:/usr/share/logstash/data
+      - {{ env.PWD }}/pipeline_leaf:/usr/share/logstash/pipeline
+      - /sys:/sys:ro
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+
+volumes:
+  esdata: null
+  kibanadata: null
+  logstashleafdata: null
+
